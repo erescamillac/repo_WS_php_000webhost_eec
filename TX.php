@@ -74,7 +74,26 @@ if (mysqli_connect_errno()) {
 //Now we update the values in database
 if($update_number == 1)	//If the received data is for SENT_NUMBER_1, we update that value
 	{
-		mysqli_query($con,"UPDATE ESPtable2 SET SENT_NUMBER_1 = $sent_nr_1 WHERE id=$unit AND PASSWORD=$pass");	
+		// VAR php ${sent_nr_1} :: representa para nosotros la Temperatura Corporal 
+		// reportada por el Sensor MLX90614 desde el Arduino
+		// Para que la App de Android pueda recuperar el [timestamp_temperatura] de forma correcta
+		// CADA VEZ que se ACTUALICE el Campo [SENT_NUMBER_1], tambien acttualizar [timestamp_temperatura]
+		// con la Fecha-hora Actuales del Servidor de PHP (validar configuracion de Zona Horaria MX :: Mexico)...
+
+		// mysqli_query($con,"UPDATE ESPtable2 SET SENT_NUMBER_1 = $sent_nr_1 WHERE id=$unit AND PASSWORD=$pass");	
+		// Obtener fecha-hora ACTUAL del Server de PHP
+		date_default_timezone_set( 'America/Mexico_City' );
+
+		$currentDateTimePHP = date('d/m/Y h:i:s a', time());
+
+		/*
+		UPDATE Customers
+			SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+			WHERE CustomerID = 1;
+		*/
+
+		mysqli_query($con,"UPDATE ESPtable2 SET SENT_NUMBER_1 = $sent_nr_1, timestamp_temperatura = $currentDateTimePHP  WHERE id=$unit AND PASSWORD=$pass");	
+
 	}
 else if($update_number == 2)	//The same and so on...
 	{
